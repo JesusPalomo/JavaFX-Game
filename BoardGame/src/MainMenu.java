@@ -50,6 +50,7 @@ public class MainMenu extends Application implements EventHandler<ActionEvent> {
 		//Button actions
 		tutorial.setOnAction(e -> primaryStage.setScene(tutorialScreen));
 		goBack.setOnAction(e -> primaryStage.setScene(mainScreen));
+		newGame.setOnAction(e -> new NewGame());
 		
 		//Primary Stage
 		primaryStage.setScene(mainScreen);
@@ -61,7 +62,6 @@ public class MainMenu extends Application implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
-		// TODO Auto-generated method stub
 		
 	}
 
