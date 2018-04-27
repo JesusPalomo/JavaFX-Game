@@ -14,9 +14,9 @@ import javafx.geometry.*;
 
 public class MainMenu extends Application { 
 	
-	public static final int Tile_Size = 100;
-	public static final int Width = 5;
-	public static final int Height = 5;
+	public static final int TILE_SIZE = 75;
+	public static final int WIDTH = 5;
+	public static final int HEIGHT = 5;
 	private Stage gameStage = new Stage();
 	
 	public static void main(String[] args) {
@@ -55,7 +55,7 @@ public class MainMenu extends Application {
 		//Game Screens
 		Scene mainScreen = new Scene(menu, 750, 750);
 		Scene tutorialScreen = new Scene(tutMenu, 750, 750);
-		Scene gameScreen = new Scene(pane, 1000, 1000);
+		Scene gameScreen = new Scene(pane, 750, 750);
 		
 		//Button actions
 		tutorial.setOnAction(e -> primaryStage.setScene(tutorialScreen));
@@ -63,8 +63,8 @@ public class MainMenu extends Application {
 		newGame.setOnAction(e -> {
 				gameStage.setScene(gameScreen);
 				gameStage.setTitle("Onitama Game");
-				gameStage.setMinHeight(1000);
-				gameStage.setMinWidth(1000);
+				gameStage.setMinHeight(750);
+				gameStage.setMinWidth(750);
 				gameStage.show();
 		});
 		
