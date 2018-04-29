@@ -8,9 +8,10 @@ public class Tile extends Rectangle {
 	private Pawn pawn;
 	
 	public Tile(int x, int y) {
-		setWidth(Constants.WIDTH);
-		setHeight(Constants.HEIGHT);
-		setFill(Color.BEIGE);
+		setWidth(Constants.TILE_SIZE);
+		setHeight(Constants.TILE_SIZE);
+		setStroke(Color.BLACK);
+		setFill(Color.BISQUE);
 		relocate(x * Constants.TILE_SIZE, y * Constants.TILE_SIZE);
 	}
 	
@@ -26,8 +27,8 @@ public class Tile extends Rectangle {
 		this.pawn = pawn;
 	}
 
-	public void setShrine() {
-		
-	}
+//	public void setShrine(boolean color) {
+//		setFill(color == true ? Color.DODGERBLUE : Color.FIREBRICK);
+//	}
 
 }

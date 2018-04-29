@@ -5,7 +5,7 @@ import javafx.scene.text.Text;
 
 public class MasterPawn extends Pawn {
 	
-	public MasterPawn(PawnGroup group, int x, int y) {
+	public MasterPawn(PawnSet group, int x, int y) {
 		super(group, x, y);
 		
 		Text master = new Text("M");

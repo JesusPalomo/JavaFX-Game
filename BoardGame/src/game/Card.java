@@ -1,15 +1,23 @@
 package game;
 
-public class Card {
+import game.Pawn.PawnSet;
+import javafx.scene.layout.BorderPane;
+
+public class Card extends BorderPane {
 	
-	public enum WhichCard {
-		BOAR, CRAB, CRANE, COBRA,
-		DRAGON, EEL, ELEPHANT, FROG,
-		GOOSE, HORSE, MANTIS, MONKEY,
-		OX, RABBIT, ROOSTER, TIGER;
+	public enum CardType {
+		BOAR(PawnSet.RED), CRAB(PawnSet.BLUE), CRANE(PawnSet.BLUE), COBRA(PawnSet.RED),
+		DRAGON(PawnSet.RED), EEL(PawnSet.BLUE), ELEPHANT(PawnSet.RED), FROG(PawnSet.RED),
+		GOOSE(PawnSet.BLUE), HORSE(PawnSet.RED), MANTIS(PawnSet.RED), MONKEY(PawnSet.BLUE),
+		OX(PawnSet.BLUE), RABBIT(PawnSet.BLUE), ROOSTER(PawnSet.RED), TIGER(PawnSet.BLUE);
+		
+		final PawnSet set;
+		CardType(PawnSet set) {
+			this.set = set;
+		}
 	}
 	
-	public Card() {
+	public Card(CardType type) {
 		
 	}
 	
