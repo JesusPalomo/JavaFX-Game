@@ -6,14 +6,14 @@ import javafx.scene.layout.StackPane;
 
 public class Pawn extends StackPane {
 	
-	private PawnSet group;
+	private PawnSet set;
 	private double mouseX, mouseY, oldX, oldY;
 	
 	public Pawn(PawnSet set, int x, int y) {
-		this.group = set;
+		this.set = set;
 		move(x,y);
 		
-		Circle circle = new Circle(34.5);
+		Circle circle = new Circle(25);
 		circle.setFill(set == PawnSet.BLUE ? Color.BLUE : Color.RED);
 		circle.setStroke(Color.BLACK);
 		circle.setTranslateX((Constants.TILE_SIZE - 69) / 2);
@@ -27,7 +27,11 @@ public class Pawn extends StackPane {
 		});
 		
 		setOnMouseDragged(e -> {
-			relocate(e.getSceneX() - mouseX + oldX, e.getSceneY() - mouseY + oldX);
+			double deltaX = e.getSceneX() - mouseX;
+			double deltaY = e.getSceneY() - mouseY;
+			relocate(getLayoutX() + deltaX, getLayoutY() + deltaY);
+			mouseX = e.getSceneX();
+			mouseY = e.getSceneY();
 		});
 	}
 	
@@ -36,7 +40,7 @@ public class Pawn extends StackPane {
 	}
 	
 	public PawnSet getSet() {
-		return group;
+		return set;
 	}
 	
 	public double getOldX() {

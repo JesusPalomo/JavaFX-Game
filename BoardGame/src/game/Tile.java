@@ -27,8 +27,4 @@ public class Tile extends Rectangle {
 		this.pawn = pawn;
 	}
 
-//	public void setShrine(boolean color) {
-//		setFill(color == true ? Color.DODGERBLUE : Color.FIREBRICK);
-//	}
-
 }

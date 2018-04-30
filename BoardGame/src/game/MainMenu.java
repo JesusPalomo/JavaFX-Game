@@ -1,5 +1,9 @@
 package game;
-import game.Card.MoveResult;
+
+import java.util.ArrayList;
+
+import game.Card.CardType;
+import game.MoveResult.MoveType;
 import game.Pawn.PawnSet;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -22,10 +26,10 @@ import javafx.geometry.*;
 public class MainMenu extends Application { 
 	private Stage primaryStage;
 	private Scene mainScreen;
-	private Stage gameStage = new Stage();
 	private Tile[][] board = new Tile[Constants.WIDTH][Constants.HEIGHT];
 	private Group tileGroup = new Group();
 	private Group pawnGroup = new Group();
+	ArrayList<CardType> cardList = new ArrayList<CardType>();
 
 	public static class Constants {
 		public static final int TILE_SIZE = 75;
@@ -39,14 +43,41 @@ public class MainMenu extends Application {
 //		pawn.setOnMouseReleased(e -> {
 //			int newX = toBoard(pawn.getLayoutX());
 //			int newY = toBoard(pawn.getLayoutY());
-//			
+//			MoveResult result = tryMove(pawn, newX, newY);
+//			int x0 = toBoard(pawn.getOldX());
+//			int y0 = toBoard(pawn.getOldY());
+//			switch(result.getType()) {
+//				case NONE:
+//					pawn.dontMove();
+//					break;
+//				case NORMAL:
+//					pawn.move(newX, newY);
+//					board[x0][y0].setPawn(null);
+//					board[newX][newY].setPawn(pawn);
+//					break;
+//				case KILL:
+//					pawn.move(newX, newY);
+//					board[x0][y0].setPawn(null);
+//					board[newX][newY].setPawn(pawn);
+//					Pawn pawn2 = result.getPawn();
+//					board[toBoard(pawn2.getOldX())][toBoard(pawn2.getOldY())].setPawn(null);
+//					pawnGroup.getChildren().remove(pawn2);
+//			}
 //		});
 //		
 //		return pawn;
 //	}
 	
-//	private MoveResult tryMove(Pawn pawn, int newX, int NewY) {
-//		if(board[newX][newY].hasPawn() || ())
+//	private MoveResult tryMove(Pawn pawn, int newX, int newY) {
+//		if(board[newX][newY].hasPawn() == true) {
+//			if (board[newX][newY].getPawn().getSet() == pawn.getSet()) {
+//				return new MoveResult(MoveType.NONE);
+//			} else {
+//				return new MoveResult(MoveType.KILL);
+//			}
+//		} else {
+//			return new MoveResult(MoveType.NORMAL);
+//		}
 //	}
 	
 //	private int toBoard(double pixel) {
@@ -72,7 +103,13 @@ public class MainMenu extends Application {
 		
 		//Button actions
 		tutorial.setOnAction(e -> primaryStage.setScene(new Scene(createTutorial(), 750, 750)));
-		newGame.setOnAction(e -> primaryStage.setScene(new Scene(createGame(), 750, 750)));
+		newGame.setOnAction(e -> {
+			cardList.clear();
+			for(CardType type : CardType.values()) {
+				cardList.add(type);
+			}
+			primaryStage.setScene(new Scene(createGame(), 750, 750));
+		});
 		
 		//Primary stage
 		primaryStage.setScene(mainScreen);
@@ -84,13 +121,47 @@ public class MainMenu extends Application {
 	
 	public Parent createGame() {
 		BorderPane gameScreen = new BorderPane();
-//		HBox top = new HBox();
-//		HBox bottom = new HBox();
+		
+		HBox top = new HBox(Constants.TILE_SIZE);
+		Card card1 = new Card(randomCardType());
+		Card card2 = new Card(randomCardType());
+		top.getChildren().addAll(card1, card2);
+		top.setAlignment(Pos.CENTER);
+		top.setPadding(new Insets(0, 0, 80, 65));
+		top.setRotate(180);
+		gameScreen.setTop(top);
+		
+		HBox bottom = new HBox(Constants.TILE_SIZE);
+		Card card3 = new Card(randomCardType());
+		Card card4 = new Card(randomCardType());
+		bottom.getChildren().addAll(card3, card4);
+		bottom.setAlignment(Pos.CENTER);
+		bottom.setPadding(new Insets(0, 65, 80, 0));
+		gameScreen.setBottom(bottom);
+		
 		VBox left = new VBox(130);
-		left.getChildren().addAll(new Button("New Game"), new Text("TURN"));
+		Text turn = new Text("TURN");
+		Button newGame = new Button("New Game");
+		newGame.setOnAction(e -> {
+			pawnGroup.getChildren().clear();
+			cardList.clear();
+			for(CardType type : CardType.values()) {
+				cardList.add(type);
+			}
+			primaryStage.setScene(new Scene(createGame(), 750, 750));
+		});
+		left.getChildren().addAll(newGame, turn);
 		left.setAlignment(Pos.CENTER);
+		left.setPadding(new Insets(0, 0, 0, 40));
 		gameScreen.setLeft(left);
-//		VBox right = new VBox();
+		
+		VBox right = new VBox();
+		Card card5 = new Card(randomCardType());
+		right.getChildren().add(card5);
+		right.setAlignment(Pos.CENTER);
+		right.setPadding(new Insets(0, 30, 0, 0));
+		gameScreen.setRight(right);
+		
 		StackPane center = new StackPane();
 		for(int y = 0; y < Constants.HEIGHT; y++) {
 			for(int x = 0; x < Constants.WIDTH; x++) {
@@ -102,19 +173,36 @@ public class MainMenu extends Application {
 					tile.setFill(Color.FIREBRICK);
 				}
 				tileGroup.getChildren().add(tile);
-//				Pawn pawn = null;
-//				MasterPawn master = null;
-//				if(y == 0) {
-//					if(x == 2) {
-//						master = 
-//					}
-//				}
+				Pawn pawn = null;
+				MasterPawn master = null;
+				if(y == 0) {
+					if(x == 2) {
+						master = new MasterPawn(PawnSet.BLUE, x, y);
+						pawn = null;
+					}
+//					pawn = createPawn(PawnSet.BLUE, x, y);
+					pawn = new Pawn(PawnSet.BLUE, x, y);
+				} else if(y == 4) {
+					if(x == 2) master = new MasterPawn(PawnSet.RED, x, y);
+//					pawn = createPawn(PawnSet.RED, x, y);
+					pawn = new Pawn(PawnSet.RED, x, y);
+				}
+				if(pawn != null) pawnGroup.getChildren().add(pawn);
+				if(master != null) pawnGroup.getChildren().add(master);
 			}
 		}
-		center.getChildren().addAll(tileGroup);
+		center.getChildren().addAll(tileGroup, pawnGroup);
 		gameScreen.setCenter(center);
 		return gameScreen;
 	}
+	
+	private CardType randomCardType() {
+		int index = (int)(Math.random() * cardList.size());
+		CardType rando = cardList.get(index);
+		cardList.remove(index);
+		return rando;
+	}
+	
 	
 	public Parent createTutorial() {
 		StackPane instruct = new StackPane();
