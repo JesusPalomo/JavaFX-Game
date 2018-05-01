@@ -37,52 +37,95 @@ public class MainMenu extends Application {
 		public static final int HEIGHT = 5;
 	}
 	
-//	private Pawn createPawn(PawnSet set, int x, int y)  {
-//		Pawn pawn = new Pawn(set, x, y);
-//		
-//		pawn.setOnMouseReleased(e -> {
-//			int newX = toBoard(pawn.getLayoutX());
-//			int newY = toBoard(pawn.getLayoutY());
-//			MoveResult result = tryMove(pawn, newX, newY);
-//			int x0 = toBoard(pawn.getOldX());
-//			int y0 = toBoard(pawn.getOldY());
-//			switch(result.getType()) {
-//				case NONE:
-//					pawn.dontMove();
-//					break;
-//				case NORMAL:
-//					pawn.move(newX, newY);
-//					board[x0][y0].setPawn(null);
-//					board[newX][newY].setPawn(pawn);
-//					break;
-//				case KILL:
-//					pawn.move(newX, newY);
-//					board[x0][y0].setPawn(null);
-//					board[newX][newY].setPawn(pawn);
-//					Pawn pawn2 = result.getPawn();
-//					board[toBoard(pawn2.getOldX())][toBoard(pawn2.getOldY())].setPawn(null);
-//					pawnGroup.getChildren().remove(pawn2);
-//			}
-//		});
-//		
-//		return pawn;
-//	}
+	private Pawn createPawn(PawnSet set, int x, int y)  {
+		Pawn pawn = new Pawn(set, x, y);
+		
+		pawn.setOnMouseReleased(e -> {
+			int newX = toBoard(pawn.getLayoutX());
+			int newY = toBoard(pawn.getLayoutY());
+			MoveResult result = tryMove(pawn, newX, newY);
+			int x0 = toBoard(pawn.getOldX());
+			int y0 = toBoard(pawn.getOldY());
+			switch(result.getType()) {
+				case NONE:
+					pawn.dontMove();
+					break;
+				case NORMAL:
+					pawn.move(newX, newY);
+					board[x0][y0].setPawn(null);
+					board[newX][newY].setPawn(pawn);
+					break;
+				case KILL:
+					pawn.move(newX, newY);
+					board[x0][y0].setPawn(null);
+					board[newX][newY].setPawn(pawn);
+					Pawn pawn2 = result.getPawn();
+					board[toBoard(pawn2.getOldX())][toBoard(pawn2.getOldY())].setPawn(null);
+					pawnGroup.getChildren().remove(pawn2);
+			}
+		});
+		
+		return pawn;
+	}
 	
-//	private MoveResult tryMove(Pawn pawn, int newX, int newY) {
-//		if(board[newX][newY].hasPawn() == true) {
-//			if (board[newX][newY].getPawn().getSet() == pawn.getSet()) {
-//				return new MoveResult(MoveType.NONE);
-//			} else {
-//				return new MoveResult(MoveType.KILL);
-//			}
-//		} else {
-//			return new MoveResult(MoveType.NORMAL);
-//		}
-//	}
+	private MoveResult tryMove(Pawn pawn, int newX, int newY) {
+		if(board[newX][newY].hasPawn() == true) {
+			if (board[newX][newY].getPawn().getSet() == pawn.getSet()) {
+				return new MoveResult(MoveType.NONE);
+			} else {
+				return new MoveResult(MoveType.KILL);
+			}
+		} else {
+			return new MoveResult(MoveType.NORMAL);
+		}
+	}
 	
-//	private int toBoard(double pixel) {
-//		return (int)(pixel + Constants.TILE_SIZE / 2) / Constants.TILE_SIZE;
-//	}
+	private MasterPawn createMaster(PawnSet set, int x, int y)  {
+		MasterPawn master = new MasterPawn(set, x, y);
+		
+		master.setOnMouseReleased(e -> {
+			int newX = toBoard(master.getLayoutX());
+			int newY = toBoard(master.getLayoutY());
+			MoveResult result = tryMove(master, newX, newY);
+			int x0 = toBoard(master.getOldX());
+			int y0 = toBoard(master.getOldY());
+			switch(result.getType()) {
+				case NONE:
+					master.dontMove();
+					break;
+				case NORMAL:
+					master.move(newX, newY);
+					board[x0][y0].setPawn(null);
+					board[newX][newY].setPawn(master);
+					break;
+				case KILL:
+					master.move(newX, newY);
+					board[x0][y0].setPawn(null);
+					board[newX][newY].setPawn(master);
+					Pawn pawn2 = result.getPawn();
+					board[toBoard(pawn2.getOldX())][toBoard(pawn2.getOldY())].setPawn(null);
+					pawnGroup.getChildren().remove(pawn2);
+			}
+		});
+		
+		return master;
+	}
+	
+	private MoveResult tryMove(MasterPawn master, int newX, int newY) {
+		if(board[newX][newY].hasPawn() == true) {
+			if (board[newX][newY].getPawn().getSet() == master.getSet()) {
+				return new MoveResult(MoveType.NONE);
+			} else {
+				return new MoveResult(MoveType.KILL);
+			}
+		} else {
+			return new MoveResult(MoveType.NORMAL);
+		}
+	}
+	
+	private int toBoard(double pixel) {
+		return (int)(pixel + Constants.TILE_SIZE / 2) / Constants.TILE_SIZE;
+	}
 	
 	public static void main(String[] args) {
 		Application.launch(args);
@@ -141,6 +184,8 @@ public class MainMenu extends Application {
 		
 		VBox left = new VBox(130);
 		Text turn = new Text("TURN");
+		turn.setScaleX(3);
+		turn.setScaleY(3);
 		Button newGame = new Button("New Game");
 		newGame.setOnAction(e -> {
 			pawnGroup.getChildren().clear();
@@ -177,15 +222,16 @@ public class MainMenu extends Application {
 				MasterPawn master = null;
 				if(y == 0) {
 					if(x == 2) {
-						master = new MasterPawn(PawnSet.BLUE, x, y);
-						pawn = null;
+						master = createMaster(PawnSet.BLUE, x, y);
+					} else {
+						pawn = createPawn(PawnSet.BLUE, x, y);
 					}
-//					pawn = createPawn(PawnSet.BLUE, x, y);
-					pawn = new Pawn(PawnSet.BLUE, x, y);
 				} else if(y == 4) {
-					if(x == 2) master = new MasterPawn(PawnSet.RED, x, y);
-//					pawn = createPawn(PawnSet.RED, x, y);
-					pawn = new Pawn(PawnSet.RED, x, y);
+					if(x == 2) {
+						master = createMaster(PawnSet.RED, x, y);
+					} else {
+						pawn = createPawn(PawnSet.RED, x, y);
+					}
 				}
 				if(pawn != null) pawnGroup.getChildren().add(pawn);
 				if(master != null) pawnGroup.getChildren().add(master);
@@ -206,8 +252,10 @@ public class MainMenu extends Application {
 	
 	public Parent createTutorial() {
 		StackPane instruct = new StackPane();
-		Label instructions = new Label("Put instructions here");
-		instruct.getChildren().add(instructions);
+		ImageView image = new ImageView(new Image("file:boardgame.PNG"));
+		image.setFitHeight(500);
+		image.setFitWidth(500);
+		instruct.getChildren().add(image);
 		
 		HBox buttons = new HBox(50);
 		buttons.setAlignment(Pos.CENTER);
