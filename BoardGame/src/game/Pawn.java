@@ -20,7 +20,7 @@ public class Pawn extends StackPane {
 		circle.setTranslateY((Constants.TILE_SIZE - 69) / 2);
 		
 		getChildren().add(circle);
-		
+
 		setOnMousePressed(e -> {
 			mouseX = e.getSceneX();
 			mouseY = e.getSceneY();
@@ -36,7 +36,16 @@ public class Pawn extends StackPane {
 	}
 	
 	public enum PawnSet {
-		RED, BLUE;
+		RED(Color.RED), BLUE(Color.BLUE);
+		
+		final Color color;
+		PawnSet(Color color) {
+			this.color = color;
+		}
+		
+		public Color getColor() {
+			return color;
+		}
 	}
 	
 	public PawnSet getSet() {
@@ -59,10 +68,6 @@ public class Pawn extends StackPane {
 	
 	public void dontMove() {
 		relocate(oldX, oldY);
-	}
-	
-	public boolean isCaptured() {
-		return false;
 	}
 	
 }

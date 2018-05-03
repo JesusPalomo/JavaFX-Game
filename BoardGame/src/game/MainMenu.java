@@ -1,7 +1,8 @@
 package game;
 
-import java.util.ArrayList;
+//Heavy inspiration from Almas Baimagambetov (almaslvl@gmail.com) to create this game
 
+import java.util.ArrayList;
 import game.Card.CardType;
 import game.MoveResult.MoveType;
 import game.Pawn.PawnSet;
@@ -14,14 +15,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.geometry.*;
-
 
 public class MainMenu extends Application { 
 	private Stage primaryStage;
@@ -35,96 +35,6 @@ public class MainMenu extends Application {
 		public static final int TILE_SIZE = 75;
 		public static final int WIDTH = 5;
 		public static final int HEIGHT = 5;
-	}
-	
-	private Pawn createPawn(PawnSet set, int x, int y)  {
-		Pawn pawn = new Pawn(set, x, y);
-		
-		pawn.setOnMouseReleased(e -> {
-			int newX = toBoard(pawn.getLayoutX());
-			int newY = toBoard(pawn.getLayoutY());
-			MoveResult result = tryMove(pawn, newX, newY);
-			int x0 = toBoard(pawn.getOldX());
-			int y0 = toBoard(pawn.getOldY());
-			switch(result.getType()) {
-				case NONE:
-					pawn.dontMove();
-					break;
-				case NORMAL:
-					pawn.move(newX, newY);
-					board[x0][y0].setPawn(null);
-					board[newX][newY].setPawn(pawn);
-					break;
-				case KILL:
-					pawn.move(newX, newY);
-					board[x0][y0].setPawn(null);
-					board[newX][newY].setPawn(pawn);
-					Pawn pawn2 = result.getPawn();
-					board[toBoard(pawn2.getOldX())][toBoard(pawn2.getOldY())].setPawn(null);
-					pawnGroup.getChildren().remove(pawn2);
-			}
-		});
-		
-		return pawn;
-	}
-	
-	private MoveResult tryMove(Pawn pawn, int newX, int newY) {
-		if(board[newX][newY].hasPawn() == true) {
-			if (board[newX][newY].getPawn().getSet() == pawn.getSet()) {
-				return new MoveResult(MoveType.NONE);
-			} else {
-				return new MoveResult(MoveType.KILL);
-			}
-		} else {
-			return new MoveResult(MoveType.NORMAL);
-		}
-	}
-	
-	private MasterPawn createMaster(PawnSet set, int x, int y)  {
-		MasterPawn master = new MasterPawn(set, x, y);
-		
-		master.setOnMouseReleased(e -> {
-			int newX = toBoard(master.getLayoutX());
-			int newY = toBoard(master.getLayoutY());
-			MoveResult result = tryMove(master, newX, newY);
-			int x0 = toBoard(master.getOldX());
-			int y0 = toBoard(master.getOldY());
-			switch(result.getType()) {
-				case NONE:
-					master.dontMove();
-					break;
-				case NORMAL:
-					master.move(newX, newY);
-					board[x0][y0].setPawn(null);
-					board[newX][newY].setPawn(master);
-					break;
-				case KILL:
-					master.move(newX, newY);
-					board[x0][y0].setPawn(null);
-					board[newX][newY].setPawn(master);
-					Pawn pawn2 = result.getPawn();
-					board[toBoard(pawn2.getOldX())][toBoard(pawn2.getOldY())].setPawn(null);
-					pawnGroup.getChildren().remove(pawn2);
-			}
-		});
-		
-		return master;
-	}
-	
-	private MoveResult tryMove(MasterPawn master, int newX, int newY) {
-		if(board[newX][newY].hasPawn() == true) {
-			if (board[newX][newY].getPawn().getSet() == master.getSet()) {
-				return new MoveResult(MoveType.NONE);
-			} else {
-				return new MoveResult(MoveType.KILL);
-			}
-		} else {
-			return new MoveResult(MoveType.NORMAL);
-		}
-	}
-	
-	private int toBoard(double pixel) {
-		return (int)(pixel + Constants.TILE_SIZE / 2) / Constants.TILE_SIZE;
 	}
 	
 	public static void main(String[] args) {
@@ -182,8 +92,16 @@ public class MainMenu extends Application {
 		bottom.setPadding(new Insets(0, 65, 80, 0));
 		gameScreen.setBottom(bottom);
 		
-		VBox left = new VBox(130);
+		VBox right = new VBox();
+		Card card5 = new Card(randomCardType());
+		right.getChildren().add(card5);
+		right.setAlignment(Pos.CENTER);
+		right.setPadding(new Insets(0, 30, 0, 0));
+		gameScreen.setRight(right);
+		
+		VBox left = new VBox(65);
 		Text turn = new Text("TURN");
+		turn.setFill(card5.getCardType().getSet().getColor());
 		turn.setScaleX(3);
 		turn.setScaleY(3);
 		Button newGame = new Button("New Game");
@@ -195,18 +113,15 @@ public class MainMenu extends Application {
 			}
 			primaryStage.setScene(new Scene(createGame(), 750, 750));
 		});
-		left.getChildren().addAll(newGame, turn);
+		Button main = new Button("Main Menu");
+		main.setOnAction(e -> {
+			primaryStage.setScene(mainScreen);
+		});
+		left.getChildren().addAll(newGame, main, turn);
 		left.setAlignment(Pos.CENTER);
 		left.setPadding(new Insets(0, 0, 0, 40));
 		gameScreen.setLeft(left);
-		
-		VBox right = new VBox();
-		Card card5 = new Card(randomCardType());
-		right.getChildren().add(card5);
-		right.setAlignment(Pos.CENTER);
-		right.setPadding(new Insets(0, 30, 0, 0));
-		gameScreen.setRight(right);
-		
+
 		StackPane center = new StackPane();
 		for(int y = 0; y < Constants.HEIGHT; y++) {
 			for(int x = 0; x < Constants.WIDTH; x++) {
@@ -249,27 +164,162 @@ public class MainMenu extends Application {
 		return rando;
 	}
 	
-	
 	public Parent createTutorial() {
-		StackPane instruct = new StackPane();
+		Text i1 = new Text("Each player has five pawns (one master + four students) of either blue or red."
+				+ "The pawn's start off on five tiles across from each other with the master pawn located "
+				+ "on the shrine. Five random cards are then displayed on the board. Two are given to the "
+				+ "players (this is your 'hand'), and one is set off to the side. The color of the card"
+				+ " placed to the side dictates who goes first. To play, choose of the cards in your hand. "
+				+ "This will dictate how your pawn will move. The start square (the darkest tile in the "
+				+ "middle) represents your pawn's location and the lighter, colored tiles surrounding it "
+				+ "represent where you can move your pawn. You cannot move the pawn out of the board "
+				+ "(you will break the game doing this too) or to a tile where one of your pawns is already "
+				+ "located. If you move the pawn to a tile occupied by your opponent's pawn, you 'capture' "
+				+ "it, effectively removing it from the game.");
+		i1.setWrappingWidth(650);
+		Text i2 = new Text("You cannot move the pawn out of the board (you will break the game doing this too) "
+				+ "or to a tile where one of your pawns is already located. If you move the pawn to a tile "
+				+ "occupied by your opponent's pawn, you 'capture' it, effectively removing it from the game. "
+				+ "The card you used is then switched with the card set off to the side, ending your turn. It "
+				+ "is then your opponent's turn, repeating the same actions as you. You must always move your "
+				+ "pawn on your turn, unless it is impossible to do so. If that is the case, you may 'pass' your"
+				+ " turn. But you still must exchange one of your cards with the one off to the side. There are "
+				+ "two ways to win: 1.) Capturing your opponent's master pawn or 2.) Landing your master pawn "
+				+ "on the opponent's shrine.");
+		i2.setWrappingWidth(650);
+		
+		StackPane ontiamaImage = new StackPane();
 		ImageView image = new ImageView(new Image("file:boardgame.PNG"));
 		image.setFitHeight(500);
 		image.setFitWidth(500);
-		instruct.getChildren().add(image);
+		ontiamaImage.getChildren().add(image);
+		
+		HBox instructions = new HBox();
+		instructions.setAlignment(Pos.CENTER);
+		instructions.setPadding(new Insets(0, 50, 0, 50));
+		instructions.getChildren().add(i1);
 		
 		HBox buttons = new HBox(50);
 		buttons.setAlignment(Pos.CENTER);
 		buttons.setPadding(new Insets(20, 20, 20, 20));
 		Button goBack = new Button("Return");
 		Button next = new Button("Next");
+		next.setOnAction(e -> {
+			instructions.getChildren().clear();
+			instructions.getChildren().add(i2);
+		});
 		Button prev = new Button("Previous");
+		prev.setOnAction(e -> {
+			instructions.getChildren().clear();
+			instructions.getChildren().add(i1);
+		});
 		goBack.setOnAction(e -> primaryStage.setScene(mainScreen));
-		
 		buttons.getChildren().addAll(goBack, prev, next);
+		
+		GridPane gp = new GridPane();
+		gp.setVgap(50);
+		gp.add(instructions, 0, 0);
+		gp.add(buttons, 0, 1);
+		
 		BorderPane tutMenu = new BorderPane();
-		tutMenu.setCenter(instruct);
-		tutMenu.setBottom(buttons);
+		tutMenu.setCenter(ontiamaImage);
+		tutMenu.setBottom(gp);
 		return tutMenu;
 	}
 
+	private Pawn createPawn(PawnSet set, int x, int y)  {
+		Pawn pawn = new Pawn(set, x, y);
+		
+		pawn.setOnMouseReleased(e -> {
+			int endX = toTile(pawn.getLayoutX());
+			int endY = toTile(pawn.getLayoutY());
+			MoveResult result = tryMove(pawn, endX, endY);
+			int startX = toTile(pawn.getOldX());
+			int startY = toTile(pawn.getOldY());
+			switch(result.getType()) {
+				case ILLEGAL:
+					pawn.dontMove();
+					break;
+				case LEGAL:
+					pawn.move(endX, endY);
+					board[startX][startY].setPawn(null);
+					board[endX][endY].setPawn(pawn);
+					break;
+				case CAPTURE:
+					pawn.move(endX, endY);
+					board[startX][startY].setPawn(null);
+					board[endX][endY].setPawn(pawn);
+					Pawn pawn2 = result.getPawn();
+					board[toTile(pawn2.getOldX())][toTile(pawn2.getOldY())].setPawn(null);
+					pawnGroup.getChildren().remove(pawn2);
+			}
+		});
+		
+		return pawn;
+	}
+	
+	private MoveResult tryMove(Pawn pawn, int endX, int endY) {
+		if(board[endX][endY].hasPawn() == true) {
+			if (board[endX][endY].getPawn().getSet() == pawn.getSet()) {
+				return new MoveResult(MoveType.ILLEGAL);
+			} else {
+				int x1 = toTile(pawn.getOldX()) + (endX - toTile(pawn.getOldX()));
+				int y1 = toTile(pawn.getOldY()) + (endY - toTile(pawn.getOldY()));
+				return new MoveResult(MoveType.CAPTURE, board[x1][y1].getPawn());
+			}
+		} else {
+			return new MoveResult(MoveType.LEGAL);
+		}
+	}
+	
+	private MasterPawn createMaster(PawnSet set, int x, int y)  {
+		MasterPawn master = new MasterPawn(set, x, y);
+		
+		master.setOnMouseReleased(e -> {
+			int endX = toTile(master.getLayoutX());
+			int endY = toTile(master.getLayoutY());
+			MoveResult result = tryMove(master, endX, endY);
+			int startX = toTile(master.getOldX());
+			int startY = toTile(master.getOldY());
+			switch(result.getType()) {
+				case ILLEGAL:
+					master.dontMove();
+					break;
+				case LEGAL:
+					master.move(endX, endY);
+					board[startX][startY].setPawn(null);
+					board[endX][endY].setPawn(master);
+					break;
+				case CAPTURE:
+					master.move(endX, endY);
+					board[startX][startY].setPawn(null);
+					board[endX][endY].setPawn(master);
+					Pawn pawn2 = result.getPawn();
+					board[toTile(pawn2.getOldX())][toTile(pawn2.getOldY())].setPawn(null);
+					pawnGroup.getChildren().remove(pawn2);
+			}
+		});
+		
+		return master;
+	}
+	
+	private MoveResult tryMove(MasterPawn master, int endX, int endY) {
+		if(board[endX][endY].hasPawn() == true) {
+			if (board[endX][endY].getPawn().getSet() == master.getSet()) {
+				return new MoveResult(MoveType.ILLEGAL);
+			} else {
+				int x1 = toTile(master.getOldX()) + (endX - toTile(master.getOldX()));
+				int y1 = toTile(master.getOldY()) + (endY - toTile(master.getOldY()));
+				return new MoveResult(MoveType.CAPTURE, board[x1][y1].getPawn());
+			}
+		} else {
+			return new MoveResult(MoveType.LEGAL);
+		}
+	}
+	
+	private int toTile(double location) {
+		return (int)(location + Constants.TILE_SIZE / 2) / Constants.TILE_SIZE;
+	}
+	
+	
 }

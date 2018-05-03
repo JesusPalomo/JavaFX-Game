@@ -5,7 +5,7 @@ public class MoveResult {
 	private Pawn pawn;
 	
 	public enum MoveType {
-		NONE, NORMAL, KILL;
+		ILLEGAL, LEGAL, CAPTURE;
 	}
 	
 	public MoveResult(MoveType type, Pawn pawn) {

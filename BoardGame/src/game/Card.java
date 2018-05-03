@@ -63,6 +63,5 @@ public class Card extends StackPane {
 	public CardType getCardType() {
 		return type;
 	}
-
 	
 }
